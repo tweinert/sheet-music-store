@@ -90,14 +90,27 @@ async function songCreate(index, name, composer, difficulty, price,
   console.log(`Added song: ${name}`);
 }
 
-async function createGenres() {
-  console.log("Adding genres");
+async function createPeriods() {
+  console.log("Adding periods");
   await Promise.all([
-    genreCreate(0, "Fantasy"),
-    genreCreate(1, "Science Fiction"),
-    genreCreate(2, "French Poetry"),
+    periodCreate(0, "Classical"),
+    periodCreate(1, "Baroque"),
+    periodCreate(2, "Renaissance"),
   ]);
 }
+
+async function createInstruments() {
+  console.log("Adding instruments");
+  await Promise.all([
+    instrumentCreate(0, "Piano", "description"),
+    instrumentCreate(1, "Violin", "description"),
+    instrumentCreate(2, "Guitar", "description"),
+    instrumentCreate(3, "Cello", "description"),
+    instrumentCreate(4, "Orchestra", "description"),
+  ]);
+}
+
+
 
 async function createAuthors() {
   console.log("Adding authors");

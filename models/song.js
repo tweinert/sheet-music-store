@@ -13,9 +13,10 @@ const SongSchema = new Schema({
   },
   price: { type: Number, required: true },
   number_in_stock: { type: Number, required: true },
-  img: { type: Buffer, required: true },
   instrument: [{ type: Schema.Types.ObjectId, ref: "Instrument"}],
   period: { type: Schema.Types.ObjectId, ref: "Period"},
+  img: { type: Buffer },
+
 });
 
 SongSchema.virtual("url").get(function() {
