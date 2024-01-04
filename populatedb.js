@@ -95,7 +95,7 @@ async function createPeriods() {
   await Promise.all([
     periodCreate(0, "Classical"),
     periodCreate(1, "Baroque"),
-    periodCreate(2, "Renaissance"),
+    periodCreate(2, "Romantic"),
   ]);
 }
 
@@ -110,16 +110,30 @@ async function createInstruments() {
   ]);
 }
 
-
-
-async function createAuthors() {
-  console.log("Adding authors");
+async function createComposers() {
+  console.log("Adding composers");
   await Promise.all([
-    authorCreate(0, "Patrick", "Rothfuss", "1973-06-06", false),
-    authorCreate(1, "Ben", "Bova", "1932-11-8", false),
-    authorCreate(2, "Isaac", "Asimov", "1920-01-02", "1992-04-06"),
-    authorCreate(3, "Bob", "Billings", false, false),
-    authorCreate(4, "Jim", "Jones", "1971-12-16", false),
+    composerCreate(0, "Johann", "Bach", "German", "1685-03-21", false),
+    composerCreate(1, "Ludwig", "Beethoven", false, "1770-12-17", "1827-03-26"),
+    composerCreate(2, "Frederic", "Chopin", "Polish", "1810-03-01", "1849-10-17"),
+    composerCreate(3, "Wolfgang", "Mozart", "Austrian", "1756-01-27", "1791-12-05"),
+    composerCreate(4, "Pyotr", "Tchaikovsky", "Russian", false, false),
+    composerCreate(5, "Antonio", "Vivaldi", "Italian", "1678-03-04", "1741-07-28"),
+  ]);
+}
+
+async function createSongs() {
+  console.log("Adding songs");
+  await Promise.all([
+    songCreate(0, "name",
+      composers[0],
+      "Beginner",
+      9.95,
+      10,
+      [instruments[0]],
+      periods[0],
+      false
+    ),
   ]);
 }
 
