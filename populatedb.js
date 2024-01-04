@@ -58,34 +58,37 @@ async function instrumentCreate(index, name, description) {
   console.log(`Added instrument: ${imprint}`);
 }
 
-async function composerCreate(index, first_name, family_name, d_birth, d_death) {
-  const authordetail = { first_name: first_name, family_name: family_name };
-  if (d_birth != false) authordetail.date_of_birth = d_birth;
-  if (d_death != false) authordetail.date_of_death = d_death;
+async function composerCreate(index, first_name, family_name, nationality, d_birth, d_death) {
+  const composerDetail = { first_name: first_name, family_name: family_name };
+  if (nationality != false) composerDetail.nationality = nationality;
+  if (d_birth != false) composerDetail.date_of_birth = d_birth;
+  if (d_death != false) composerDetail.date_of_death = d_death;
 
-  const author = new Author(authordetail);
+  const composer = new Composer(composerDetail);
 
-  await author.save();
-  authors[index] = author;
-  console.log(`Added author: ${first_name} ${family_name}`);
+  await composer.save();
+  composers[index] = composer;
+  console.log(`Added composer: ${first_name} ${family_name}`);
 }
 
-async function songCreate(index, title, summary, isbn, author, genre) {
-  const bookdetail = {
-    title: title,
-    summary: summary,
-    author: author,
-    isbn: isbn,
+async function songCreate(index, name, composer, difficulty, price, 
+    number_in_stock, instrument, period, img) {
+  const songDetail = {
+    name: name,
+    composer: composer,
+    difficulty: difficulty,
+    price: price,
+    number_in_stock: number_in_stock,
   };
-  if (genre != false) bookdetail.genre = genre;
+  if (instrument != false) songDetail.instrument = instrument;
+  if (period != false) songDetail.period = period;
+  if (img != false) songDetail.img = img;
 
-  const book = new Book(bookdetail);
-  await book.save();
-  books[index] = book;
-  console.log(`Added book: ${title}`);
+  const song = new Song(songDetail);
+  await song.save();
+  songs[index] = song;
+  console.log(`Added song: ${name}`);
 }
-
-
 
 async function createGenres() {
   console.log("Adding genres");
