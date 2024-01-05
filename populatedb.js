@@ -52,7 +52,7 @@ async function instrumentCreate(index, name, description) {
   const instrument = new Instrument(instrumentDetail);
   await instrument.save();
   instruments[index] = instrument;
-  console.log(`Added instrument: ${imprint}`);
+  console.log(`Added instrument: ${name}`);
 }
 
 async function composerCreate(index, first_name, family_name, nationality, d_birth, d_death) {
@@ -99,11 +99,11 @@ async function createPeriods() {
 async function createInstruments() {
   console.log("Adding instruments");
   await Promise.all([
-    instrumentCreate(0, "Piano", "description"),
-    instrumentCreate(1, "Violin", "description"),
-    instrumentCreate(2, "Guitar", "description"),
-    instrumentCreate(3, "Cello", "description"),
-    instrumentCreate(4, "Orchestra", "description"),
+    instrumentCreate(0, "Piano", "The piano is a keyboard instrument that produces sound when pressed on the keys."),
+    instrumentCreate(1, "Violin", "The violin, sometimes known as a fiddle, is a wooden chordophone (string instrument) in the violin family. Most violins have a hollow wooden body."),
+    instrumentCreate(2, "Guitar", "The guitar is a stringed musical instrument, that is usually fretted(with some exceptions), and typically has six or twelve strings."),
+    instrumentCreate(3, "Cello", "The cello, violoncello, is a bowed string instrument of the violin family."),
+    instrumentCreate(4, "Orchestra", "An orchestra is a large instrumental ensemble typical of classical music, which combines instruments from different families. "),
   ]);
 }
 
