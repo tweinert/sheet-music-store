@@ -1,8 +1,30 @@
 const Song = require("../models/song");
+const Composer = require("../models/composer");
+const Instrument = require("../models/instrument");
+const Period = require("../models/period");
+
 const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Site Home Page");
+  const [
+    numSongs,
+    numComposers,
+    numInstruments,
+    numPeriods,
+  ] = await Promise.all([
+    Song.countDocuments({}).exec(),
+    Composer.countDocuments({}).exec(),
+    Instrument.countDocuments({}).exec(),
+    Period.countDocuments({}).exec(),
+  ]);
+
+  res.render("index", {
+    title: "Sheet Music Store Home",
+    song_count: numSongs,
+    composer_count: numComposers,
+    instrument_count: numInstruments,
+    period_count: numPeriods,
+  });
 });
 
 // Display list of all songs.

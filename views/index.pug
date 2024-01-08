@@ -2,4 +2,14 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  p Welcome to #[em Sheet Music Store], a one stop shop for all your sheet music needs.
+
+  h1 Dynamic content
+
+  p The store has the following record counts:
+
+  ul
+    li #[strong Songs:] !{song_count}
+    li #[strong Composers:] !{composer_count}
+    li #[strong Instruments:] !{instrument_count}
+    li #[strong Period:] !{period_count}
