@@ -29,7 +29,12 @@ exports.index = asyncHandler(async (req, res, next) => {
 
 // Display list of all songs.
 exports.song_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Song list");
+  const allSongs = await Song.find({}, "name composer")
+    .sort({ title: 1 })
+    .populate("composer")
+    .exec();
+  
+  res.render("song_list", { title: "Song List", song_list: allSongs });
 });
 
 // Display detail page for a specific song.
