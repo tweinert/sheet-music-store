@@ -30,7 +30,7 @@ exports.index = asyncHandler(async (req, res, next) => {
 // Display list of all songs.
 exports.song_list = asyncHandler(async (req, res, next) => {
   const allSongs = await Song.find({}, "name composer")
-    .sort({ title: 1 })
+    .sort({ name: 1 })
     .populate("composer")
     .exec();
   

@@ -3,7 +3,11 @@ const asyncHandler = require("express-async-handler");
 
 // Display list of all instruments.
 exports.instrument_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Instrument list");
+  const allInstruments = await Instrument.find({}, "name description")
+    .sort({ name: 1 })
+    .exec();
+  
+  res.render("instrument_list", { title: "Instrument List", instrument_list: allInstruments });
 });
 
 // Display detail page for a specific instrument.
