@@ -3,7 +3,12 @@ const asyncHandler = require("express-async-handler");
 
 // Display list of all Composers.
 exports.composer_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Composer list");
+  const allComposers = await Composer.find().sort({ family_name: 1 }).exec()
+
+  res.render("composer_list", {
+    title: "Composer List",
+    composer_list: allComposers,
+  });
 });
 
 // Display detail page for a specific composer.
