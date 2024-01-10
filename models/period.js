@@ -7,7 +7,7 @@ const PeriodSchema = new Schema({
 });
 
 PeriodSchema.virtual("url").get(function() {
-  return `catalog/period/${this._id}`;
+  return `/catalog/period/${this._id}`;
 });
 
 module.exports = mongoose.model("Period", PeriodSchema);

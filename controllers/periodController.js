@@ -3,7 +3,11 @@ const asyncHandler = require("express-async-handler");
 
 // Display list of all periods.
 exports.period_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Period list");
+  const allPeriods = await Period.find({}, "name")
+    .sort({ name: 1 })
+    .exec();
+  
+  res.render("period_list", { title: "Period List", period_list: allPeriods });
 });
 
 // Display detail page for a specific period.

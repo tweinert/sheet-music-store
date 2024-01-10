@@ -1,0 +1,12 @@
+extends layout 
+
+block content 
+  h1= title 
+  if period_list.length 
+    ul 
+      each period in period_list 
+        li 
+          a(href=period.url) #{period.name}
+
+  else 
+    p There are no periods
