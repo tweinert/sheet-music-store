@@ -1,0 +1,17 @@
+extends layout 
+
+block content 
+
+  h1 Period: #{period.name} 
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Songs
+    if period_songs.length 
+      dl 
+        each song in period_songs 
+          dt 
+            a(href=song.url) #{song.name}
+          dd #{song.composer.name} 
+    else 
+      p This period has no songs.

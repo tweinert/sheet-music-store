@@ -1,4 +1,5 @@
 const Period = require("../models/period");
+const Song = require("../models/song");
 const asyncHandler = require("express-async-handler");
 
 // Display list of all periods.
@@ -12,7 +13,24 @@ exports.period_list = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific period.
 exports.period_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Period detail: ${req.params.id}`);
+  const [period, songsInPeriod] = await Promise.all([
+    Period.findById(req.params.id).exec(),
+    Song.find({ period: req.params.id }, "name")
+      .populate("composer")
+      .exec(),
+  ]);
+  if (period === null) {
+    // No results
+    const err = new Error("Period not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("period_detail", {
+    title: "Period Detail",
+    period: period,
+    period_songs: songsInPeriod,
+  });
 });
 
 // Display period create form on GET.
