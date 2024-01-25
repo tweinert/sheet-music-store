@@ -39,7 +39,23 @@ exports.song_list = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific song.
 exports.song_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Song detail: ${req.params.id}`);
+  const song = await Song.findById(req.params.id)
+    .populate("composer")
+    .populate("instrument")
+    .populate("period")
+    .exec();
+
+    if (song === null)
+    {
+      const err = new Error("Song not found");
+      err.status = 404;
+      return next(err);
+    }
+
+    res.render("song_detail", {
+      name: song.name,
+      song: song, 
+    });
 });
 
 // Display song create form on GET.
