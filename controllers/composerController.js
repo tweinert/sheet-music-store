@@ -1,4 +1,5 @@
 const Composer = require("../models/composer");
+const Song = require("../models/song");
 const asyncHandler = require("express-async-handler");
 
 // Display list of all Composers.
@@ -13,7 +14,25 @@ exports.composer_list = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific composer.
 exports.composer_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Composer detail: ${req.params.id}`);
+  const [composer, allSongsByComposer] = await Promise.all([
+    Composer.findById(req.params.id).exec(),
+    Song.find({ composer: req.params.id }, "name")
+      .populate("instrument")
+      .populate("period")
+      .exec(),
+  ]);
+
+  if (composer === null) {
+    const err = new Error("Composer not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("composer_detail", {
+    name: composer.first_name,
+    composer: composer,
+    composer_songs: allSongsByComposer,
+  });
 });
 
 // Display composer create form on GET.

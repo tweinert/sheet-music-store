@@ -45,17 +45,16 @@ exports.song_detail = asyncHandler(async (req, res, next) => {
     .populate("period")
     .exec();
 
-    if (song === null)
-    {
-      const err = new Error("Song not found");
-      err.status = 404;
-      return next(err);
-    }
+  if (song === null) {
+    const err = new Error("Song not found");
+    err.status = 404;
+    return next(err);
+  }
 
-    res.render("song_detail", {
-      name: song.name,
-      song: song, 
-    });
+  res.render("song_detail", {
+    name: song.name,
+    song: song, 
+  });
 });
 
 // Display song create form on GET.

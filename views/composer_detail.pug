@@ -1,0 +1,22 @@
+extends layout 
+
+block content 
+  h1 Title: #{composer.name}
+  p #{composer.lifespan} 
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Songs 
+    if composer_songs.length 
+      dl 
+        each song in composer_songs 
+          dt 
+            a(href=song.url) #{song.name} 
+          dd #[strong Period: ] #{song.period.name}
+          p #[strong Instruments: ]
+            each val, index in song.instrument 
+              a(href=val.url) #{val.name} 
+              if index < song.instrument.length - 1 
+                |,&nbsp;
+    else 
+      p This composer has no songs.
