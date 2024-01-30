@@ -1,4 +1,5 @@
 const Instrument = require("../models/instrument");
+const Song = require("../models/song");
 const asyncHandler = require("express-async-handler");
 
 // Display list of all instruments.
@@ -12,7 +13,24 @@ exports.instrument_list = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific instrument.
 exports.instrument_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Instrument detail: ${req.params.id}`);
+  const [instrument, songsWithInstrument] = await Promise.all([
+    Instrument.findById(req.params.id).exec(),
+    Song.find({ instrument: req.params.id }, "name")
+      .populate("composer")
+      .exec(),
+  ]);
+
+  if (instrument === null) {
+    const err = new Error("Instrument not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("instrument_detail", {
+    title: "Instrument Detail",
+    instrument: instrument,
+    instrument_songs: songsWithInstrument,
+  });
 });
 
 // Display instrument create form on GET.

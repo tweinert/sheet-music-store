@@ -19,6 +19,7 @@ exports.period_detail = asyncHandler(async (req, res, next) => {
       .populate("composer")
       .exec(),
   ]);
+  
   if (period === null) {
     // No results
     const err = new Error("Period not found");
