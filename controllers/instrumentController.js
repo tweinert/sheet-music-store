@@ -1,6 +1,7 @@
 const Instrument = require("../models/instrument");
 const Song = require("../models/song");
 const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
 
 // Display list of all instruments.
 exports.instrument_list = asyncHandler(async (req, res, next) => {
@@ -35,13 +36,48 @@ exports.instrument_detail = asyncHandler(async (req, res, next) => {
 
 // Display instrument create form on GET.
 exports.instrument_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Instrument create GET");
+  res.render("instrument_form", { title: "Create Instrument" });
 });
 
 // Handle instrument create on POST.
-exports.instrument_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Instrument create POST");
-});
+exports.instrument_create_post = [
+  // validate and sanitize the name field
+  body("name", "Name must not be empty.")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  body("description", "Description must not be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const instrument = new Instrument({
+      name: req.body.name,
+      description: req.body.description,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("instrument_form", {
+        title: "Create Instrument",
+        instrument: instrument,
+        errors: errors.array(), 
+      });
+      return;
+    } else {
+      const instrumentExists = await Instrument.findOne({ name: req.body.name})
+        .exec();
+      if (instrumentExists) {
+        res.redirect(instrumentExists.url);
+      } else {
+        await instrument.save();
+        res.redirect(instrument.url);
+      }
+    }
+  })
+];
 
 // Display instrument delete form on GET.
 exports.instrument_delete_get = asyncHandler(async (req, res, next) => {
