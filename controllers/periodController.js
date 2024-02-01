@@ -1,6 +1,7 @@
 const Period = require("../models/period");
 const Song = require("../models/song");
 const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
 
 // Display list of all periods.
 exports.period_list = asyncHandler(async (req, res, next) => {
@@ -36,13 +37,40 @@ exports.period_detail = asyncHandler(async (req, res, next) => {
 
 // Display period create form on GET.
 exports.period_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Period create GET");
+  res.render("period_form", { title: "Create Period" });
 });
 
 // Handle period create on POST.
-exports.period_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Period create POST");
-});
+exports.period_create_post = [
+  body("name", "Name must be at least 3 characters long")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const period = new Period({ name: req.body.name });
+
+    if (!errors.isEmpty()) {
+      res.render("period_form", {
+        title: "Create Period",
+        period: period,
+        errors: errors.array(),
+      }); 
+      return;
+    } else {
+      const periodExists = await Period.findOne({ name: req.body.name })
+        .exec();
+      if (periodExists) {
+        res.redirect(periodExists.url);
+      } else {
+        await period.save();
+        res.redirect(period.url);
+      }
+    }
+  })
+];
 
 // Display period delete form on GET.
 exports.period_delete_get = asyncHandler(async (req, res, next) => {

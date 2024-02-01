@@ -44,7 +44,7 @@ exports.instrument_create_post = [
   // validate and sanitize the name field
   body("name", "Name must not be empty.")
     .trim()
-    .isLength({ min: 3 })
+    .isLength({ min: 1 })
     .escape(),
   body("description", "Description must not be empty")
     .trim()
