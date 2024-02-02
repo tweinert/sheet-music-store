@@ -1,0 +1,64 @@
+extends layout
+
+block content
+  h1= title
+
+  form(method='POST')
+    div.form-group
+      label(for='name') Name:
+      input#name.form-control(type='text', placeholder='Name of song' name='name' required value=(undefined===song ? '' : song.name))
+    div.form-group
+      label(for='composer') Composer:
+      select#composer.form-control(name='composer' required)
+        option(value='') --Please select a composer--
+        for composer in composers
+          if song
+            if composer._id.toString()===song.composer._id.toString()
+              option(value=composer._id selected) #{composer.name}
+            else
+              option(value=composer._id) #{composer.name}
+          else
+            option(value=composer._id) #{composer.name}
+    div.form-group
+      label(for='difficulty') Difficulty:
+      select#difficulty.form-control(name='difficulty' required)
+        option(value='') --Please select a difficulty--
+        each val in ['Beginner', 'Intermediate', 'Advanced']
+          if undefined===song || song.difficulty!=val
+            option(value=val)= val
+          else
+            option(value=val selected)= val
+    div.form-group
+      label(for='price') Price:
+      input#price.form-control(type='number', placeholder=0 name='price' required value=( undefined===song ? '' : song.price))
+    div.form-group
+      label(for='number_in_stock') Number in Stock:
+      input#number_in_stock.form-control(type='number', placeholder=0 name='number_in_stock' required value=(undefined===song ? '' : song.number_in_stock))
+    div.form-group
+      label Instrument:
+      div
+        for instrument in instruments
+          div(style='display: inline; padding-right:10px;')
+            if instrument.checked
+              input.checkbox-input(type='checkbox', name='instrument', id=instrument._id, value=instrument._id, checked)
+            else
+              input.checkbox-input(type='checkbox', name='instrument', id=instrument._id, value=instrument._id)
+            label(for=instrument._id) &nbsp;#{instrument.name}
+    div.form-group
+      label(for='period') Period:
+      select#period.form-control(name='period' required)
+        option(value='') --Please select a period--
+        for period in periods
+          if song
+            if period._id.toString()===song.period._id.toString()
+              option(value=period._id selected) #{period.name}
+            else
+              option(value=period._id) #{period.name}
+          else
+            option(value=period._id) #{period.name}
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors
+    ul
+      for error in errors
+        li!= error.msg

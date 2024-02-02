@@ -59,7 +59,18 @@ exports.song_detail = asyncHandler(async (req, res, next) => {
 
 // Display song create form on GET.
 exports.song_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Song create GET");
+  const [allComposers, allInstruments, allPeriods] = await Promise.all([
+    Composer.find().sort({ family_name: 1 }).exec(),
+    Instrument.find().sort({ name: 1 }).exec(),
+    Period.find().sort({ name: 1 }).exec(),
+  ]);
+
+  res.render("song_form", {
+    title: "Create Song",
+    composers: allComposers,
+    instruments: allInstruments,
+    periods: allPeriods,
+  });
 });
 
 // Handle song create on POST.
