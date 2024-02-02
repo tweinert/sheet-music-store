@@ -1,6 +1,7 @@
 const Composer = require("../models/composer");
 const Song = require("../models/song");
 const asyncHandler = require("express-async-handler");
+const { body, validationResult } = require("express-validator");
 
 // Display list of all Composers.
 exports.composer_list = asyncHandler(async (req, res, next) => {
@@ -37,13 +38,57 @@ exports.composer_detail = asyncHandler(async (req, res, next) => {
 
 // Display composer create form on GET.
 exports.composer_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Composer create GET");
+  res.render("composer_form", { title: "Create Composer"});
 });
 
 // Handle composer create on POST.
-exports.composer_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Composer create POST");
-});
+exports.composer_create_post = [
+  body("first_name", "First name field must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("family_name", "Family name field must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("nationality", "Invalid nationality.")
+    .optional({ values: "falsy" })
+    .trim()
+    .isAlphanumeric()
+    .escape(),
+  body("date_of_birth", "Invalid date of birth")
+    .optional({ values: "falsy" })
+    .isISO8601()
+    .toDate(),
+  body("date_of_death", "Invalid date of death")
+    .optional({ values: "falsy" })
+    .isISO8601()
+    .toDate(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const composer = new Composer({
+      first_name: req.body.first_name,
+      family_name: req.body.family_name,
+      nationality: req.body.nationality,
+      date_of_birth: req.body.date_of_birth,
+      date_of_death: req.body.date_of_death,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("composer_form", {
+        title: "Create Composer",
+        composer: composer,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      await composer.save();
+      res.redirect(composer.url);
+    }
+  }),
+];
 
 // Display composer delete form on GET.
 exports.composer_delete_get = asyncHandler(async (req, res, next) => {
