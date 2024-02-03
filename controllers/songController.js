@@ -2,6 +2,7 @@ const Song = require("../models/song");
 const Composer = require("../models/composer");
 const Instrument = require("../models/instrument");
 const Period = require("../models/period");
+const { body, validationResult } = require("express-validator");
 
 const asyncHandler = require("express-async-handler");
 
@@ -74,9 +75,75 @@ exports.song_create_get = asyncHandler(async (req, res, next) => {
 });
 
 // Handle song create on POST.
-exports.song_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Song create POST");
-});
+exports.song_create_post = [
+  // convert instrument to an array
+  (req, res, next) => {
+    if (!Array.isArray(req.body.instrument)) {
+      req.body.intrument = 
+        typeof req.body.instrument === "undefined" ? [] : [req.body.instrument];
+    }
+    next();
+  },
+
+  body("name", "Name must not be empty.")
+    .trim()
+    .isLength({ min: 1})
+    .escape(),
+  body("composer", "Composer must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("difficulty").escape(),
+  body("price", "Price must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("number_in_stock", "Number in stock must be specified.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("instrument.*").escape(),
+  body("period").escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const song = new Song({
+      name: req.body.name,
+      composer: req.body.composer,
+      difficulty: req.body.difficulty,
+      price: req.body.price,
+      number_in_stock: req.body.number_in_stock,
+      instrument: req.body.instrument,
+      period: req.body.period,
+    });
+
+    if (!errors.isEmpty()) {
+      const [allComposers, allInstruments, allPeriods] = await Promise.all([
+        Composer.find().sort({ family_name: 1 }).exec(),
+        Instrument.find().sort({ name: 1 }).exec(),
+        Period.find().sort({ name: 1 }).exec(),
+      ]);
+
+      for (const instrument of allInstruments) {
+        if (song.instrument.includes(instrument._id)) {
+          instrument.checked = "true";
+        }
+      }
+      res.render("song_form", {
+        title: "Create Song",
+        composers: allComposers,
+        instruments: allInstruments,
+        periods: allPeriods,
+        song: song,
+        errors: errors.array(),
+      });
+    } else {
+      await song.save();
+      res.redirect(song.url);
+    }
+  }),
+];
 
 // Display song delete form on GET.
 exports.song_delete_get = asyncHandler(async (req, res, next) => {
