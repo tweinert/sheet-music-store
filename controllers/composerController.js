@@ -1,3 +1,4 @@
+const composer = require("../models/composer");
 const Composer = require("../models/composer");
 const Song = require("../models/song");
 const asyncHandler = require("express-async-handler");
@@ -92,12 +93,40 @@ exports.composer_create_post = [
 
 // Display composer delete form on GET.
 exports.composer_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Composer delete GET");
+  const [composer, allSongsByComposer] = await Promise.all([
+    Composer.findById(req.params.id).exec(),
+    Song.find({ composer: req.params.id }, "name").exec(),
+  ]);
+
+  if (composer === null) {
+    res.redirect("/catalog/composers");
+  }
+
+  res.render("composer_delete", {
+    title: "Delete Composer",
+    composer: composer,
+    composer_songs: allSongsByComposer,
+  });
 });
 
 // Handle composer delete on POST.
 exports.composer_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Composer delete POST");
+  const [composer, allSongsByComposer] = await Promise.all([
+    Composer.findById(req.params.id).exec(),
+    Song.find({ composer: req.params.id }, "name").exec(),
+  ]);
+
+  if (allSongsByComposer.length > 0) {
+    res.render("composer_delete", {
+      title: "Delete Composer",
+      composer: composer,
+      composer_songs: allSongsByComposer,
+    });
+    return;
+  } else {
+    await Composer.findByIdAndDelete(req.body.composerid);
+    res.redirect("/catalog/composers");
+  }
 });
 
 // Display composer update form on GET.

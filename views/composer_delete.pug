@@ -1,0 +1,25 @@
+extends layout
+
+block content
+
+  h1 #{title}: #{composer.name}
+  p= composer.lifespan
+
+  if composer_songs.length
+
+    p #[strong Delete the following songs before attempting to delete this composer.]
+    div(style='margin-left:20px;margin-top:20px')
+      h4 Songs
+      dl
+        each song in composer_songs
+          dt
+            a(href=song.url) #{song.name}
+
+  else
+    p Do you really want to delete this Composer?
+
+    form(method='POST')
+      div.form-group
+        input#composerid.form-control(type='hidden', name='composerid', value=composer._id )
+
+      button.btn.btn-primary(type='submit') Delete

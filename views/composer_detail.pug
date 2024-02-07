@@ -13,7 +13,8 @@ block content
         each song in composer_songs 
           dt 
             a(href=song.url) #{song.name} 
-          dd #[strong Period: ] #{song.period.name}
+          if song.period
+            dd #[strong Period: ] #{song.period.name}
           p #[strong Instruments: ]
             each val, index in song.instrument 
               a(href=val.url) #{val.name} 
@@ -21,3 +22,6 @@ block content
                 |,&nbsp;
     else 
       p This composer has no songs.
+  hr
+  p
+    a(href=composer.url+'/delete') Delete composer
