@@ -1,0 +1,24 @@
+extends layout
+
+block content
+
+  h1 #{title}: #{period.name}
+
+  if period_songs.length
+
+    p #[strong Delete the following songs before attempting to delete this period.]
+    div(style='margin-left:20px;margin-top:20px')
+      h4 Songs
+      dl
+        each song in period_songs
+          dt
+            a(href=song.url) #{song.name}
+
+  else
+    p Do you really want to delete this Period?
+
+    form(method='POST')
+      div.form-group
+        input#periodid.form-control(type='hidden', name='periodid', value=period._id )
+
+      button.btn.btn-primary(type='submit') Delete

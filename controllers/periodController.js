@@ -74,12 +74,40 @@ exports.period_create_post = [
 
 // Display period delete form on GET.
 exports.period_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Period delete GET");
+  const [period, allSongsWithPeriod] = await Promise.all([
+    Period.findById(req.params.id).exec(),
+    Song.find({ period: req.params.id }, "name").exec(),
+  ]);
+
+  if (period === null) {
+    res.redirect("/catalog/periods");
+  }
+
+  res.render("period_delete", {
+    title: "Delete Period",
+    period: period,
+    period_songs: allSongsWithPeriod,
+  });
 });
 
 // Handle period delete on POST.
 exports.period_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Period delete POST");
+  const [period, allSongsWithPeriod] = await Promise.all([
+    Period.findById(req.params.id).exec(),
+    Song.find({ period: req.params.id }, "name").exec(),
+  ]);
+
+  if (allSongsWithPeriod.length > 0) {
+    res.render("period_delete", {
+      title: "Delete Period",
+      period: period,
+      period_songs: allSongsWithPeriod,
+    });
+    return;
+  } else {
+    await Period.findByIdAndDelete(req.body.periodid);
+    res.redirect("/catalog/periods");
+  }
 });
 
 // Display period update form on GET.
