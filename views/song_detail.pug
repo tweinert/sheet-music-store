@@ -8,8 +8,9 @@ block content
   p #[strong Difficulty: ] #{song.difficulty}
   p #[strong Price: ] #{song.price}
   p #[strong Number in Stock: ] #{song.number_in_stock}
-  p #[strong Period: ]
-    a(href=song.period.url) #{song.period.name}
+  if song.period
+    p #[strong Period: ]
+      a(href=song.period.url) #{song.period.name}
   p #[strong Instruments: ]
     each val, index in song.instrument 
       a(href=val.url) #{val.name} 
