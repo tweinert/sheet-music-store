@@ -147,12 +147,24 @@ exports.song_create_post = [
 
 // Display song delete form on GET.
 exports.song_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Song delete GET");
+  const song = await Song.findById(req.params.id).exec();
+
+  if (song === null) {
+    res.redirect("/catalog/songs");
+  }
+
+  res.render("song_delete", {
+    title: "Delete Song",
+    song: song,
+  });
 });
 
 // Handle song delete on POST.
 exports.song_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Song delete POST");
+  const song = Song.findById(req.params.id).exec();
+
+  await Song.findByIdAndDelete(req.body.songid);
+  res.redirect("/catalog/songs");
 });
 
 // Display song update form on GET.
