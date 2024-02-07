@@ -81,12 +81,40 @@ exports.instrument_create_post = [
 
 // Display instrument delete form on GET.
 exports.instrument_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Instrument delete GET");
+  const [instrument, allSongsWithInstrument] = await Promise.all([
+    Instrument.findById(req.params.id).exec(),
+    Song.find({ instrument: req.params.id }, "name").exec(),
+  ]);
+
+  if (instrument === null) {
+    res.redirect("/catalog/instruments");
+  }
+
+  res.render("instrument_delete", {
+    title: "Delete Instrument",
+    instrument: instrument,
+    instrument_songs: allSongsWithInstrument,
+  });
 });
 
 // Handle instrument delete on POST.
 exports.instrument_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Instrument delete POST");
+  const [instrument, allSongsWithInstrument] = await Promise.all([
+    Instrument.findById(req.params.id).exec(),
+    Song.find({ instrument: req.params.id }, "name").exec(),
+  ]);
+
+  if (allSongsWithInstrument.length > 0) {
+    res.render("instrument_delete", {
+      title: "Delete Instrument",
+      instrument: instrument,
+      instrument_songs: allSongsWithInstrument,
+    });
+    return; 
+  } else {
+    await Instrument.findByIdAndDelete(req.body.instrumentid);
+    res.redirect("/catalog/instruments");
+  }
 });
 
 // Display instrument update form on GET.
