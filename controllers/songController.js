@@ -138,6 +138,7 @@ exports.song_create_post = [
         song: song,
         errors: errors.array(),
       });
+      return;
     } else {
       await song.save();
       res.redirect(song.url);
@@ -169,10 +170,103 @@ exports.song_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display song update form on GET.
 exports.song_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Song update GET");
+  const [song, allComposers, allInstruments, allPeriods] = await Promise.all([
+    Song.findById(req.params.id).populate("composer").exec(),
+    Composer.find().sort({ family_name: 1 }).exec(),
+    Instrument.find().sort({ name: 1}).exec(),
+    Period.find().sort({ name: 1}).exec(),
+  ]);
+
+  if (song === null) {
+    const err = new Error("Song not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  allInstruments.forEach((instrument) => {
+    if (song.instrument.includes(instrument._id)) instrument.checked = "true";
+  });
+
+  res.render("song_form", {
+    title: "Update Song",
+    composers: allComposers,
+    instruments: allInstruments,
+    periods: allPeriods,
+    song: song,
+  });
 });
 
 // Handle song update on POST.
-exports.song_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Song update POST");
-});
+exports.song_update_post = [
+  // convert instrument to an array
+  (req, res, next) => {
+    if (!Array.isArray(req.body.instrument)) {
+      req.body.intrument = 
+        typeof req.body.instrument === "undefined" ? [] : [req.body.instrument];
+    }
+    next();
+  },
+
+  body("name", "Name must not be empty.")
+    .trim()
+    .isLength({ min: 1})
+    .escape(),
+  body("composer", "Composer must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("difficulty").escape(),
+  body("price", "Price must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("number_in_stock", "Number in stock must be specified.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("instrument.*").escape(),
+  body("period").escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const song = new Song({
+      name: req.body.name,
+      composer: req.body.composer,
+      difficulty: req.body.difficulty,
+      price: req.body.price,
+      number_in_stock: req.body.number_in_stock,
+      instrument: typeof req.body.instrument === "undefined" ? [] :
+        req.body.instrument,
+      period: req.body.period,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      const [allComposers, allInstruments, allPeriods] = await Promise.all([
+        Composer.find().sort({ family_name: 1 }).exec(),
+        Instrument.find().sort({ name: 1 }).exec(),
+        Period.find().sort({ name: 1 }).exec(),
+      ]);
+
+      for (const instrument of allInstruments) {
+        if (song.instrument.indexOf(instrument._id) > -1) {
+          instrument.checked = "true";
+        }
+      }
+      res.render("song_form", {
+        title: "Create Song",
+        composers: allComposers,
+        instruments: allInstruments,
+        periods: allPeriods,
+        song: song,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      const updatedSong = await Song.findByIdAndUpdate(req.params.id, 
+        song, {});
+      res.redirect(updatedSong.url);
+    }
+  }),
+];

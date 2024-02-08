@@ -3,7 +3,7 @@ extends layout
 block content
   h1= title
 
-  form(method='POST' enctype='multipart/form-data')
+  form(method='POST')
     div.form-group
       label(for='name') Name:
       input#name.form-control(type='text', placeholder='Name of song' name='name' required value=(undefined===song ? '' : song.name))
