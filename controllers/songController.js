@@ -255,7 +255,7 @@ exports.song_update_post = [
         }
       }
       res.render("song_form", {
-        title: "Create Song",
+        title: "Update Song",
         composers: allComposers,
         instruments: allInstruments,
         periods: allPeriods,

@@ -119,10 +119,53 @@ exports.instrument_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display instrument update form on GET.
 exports.instrument_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Instrument update GET");
+
+  const instrument = await Instrument.findById(req.params.id).exec();
+
+  if (instrument === null) {
+    const err = new Error("Instrument not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("instrument_form", {
+    title: "Update Instrument",
+    instrument: instrument,
+  });
 });
 
 // Handle instrument update on POST.
-exports.instrument_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Instrument update POST");
-});
+exports.instrument_update_post = [
+  // validate and sanitize the name field
+  body("name", "Name must not be empty.")
+  .trim()
+  .isLength({ min: 1 })
+  .escape(),
+  body("description", "Description must not be empty")
+  .trim()
+  .isLength({ min: 1 })
+  .escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const instrument = new Instrument({
+      name: req.body.name,
+      description: req.body.description,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("instrument_form", {
+        title: "Create Instrument",
+        instrument: instrument,
+        errors: errors.array(), 
+      });
+      return;
+    } else {
+      const updatedInstrument = await Instrument.findByIdAndUpdate(req.params.id,
+        instrument, {});
+      res.redirect(updatedInstrument.url);
+    }
+  }),
+];
