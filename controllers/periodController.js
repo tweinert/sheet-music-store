@@ -5,6 +5,7 @@ const { body, validationResult } = require("express-validator");
 
 // Display list of all periods.
 exports.period_list = asyncHandler(async (req, res, next) => {
+
   const allPeriods = await Period.find({}, "name")
     .sort({ name: 1 })
     .exec();
@@ -14,6 +15,7 @@ exports.period_list = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific period.
 exports.period_detail = asyncHandler(async (req, res, next) => {
+
   const [period, songsInPeriod] = await Promise.all([
     Period.findById(req.params.id).exec(),
     Song.find({ period: req.params.id }, "name")
@@ -37,11 +39,13 @@ exports.period_detail = asyncHandler(async (req, res, next) => {
 
 // Display period create form on GET.
 exports.period_create_get = asyncHandler(async (req, res, next) => {
+
   res.render("period_form", { title: "Create Period" });
 });
 
 // Handle period create on POST.
 exports.period_create_post = [
+
   body("name", "Name must be at least 3 characters long")
     .trim()
     .isLength({ min: 3 })
@@ -74,6 +78,7 @@ exports.period_create_post = [
 
 // Display period delete form on GET.
 exports.period_delete_get = asyncHandler(async (req, res, next) => {
+
   const [period, allSongsWithPeriod] = await Promise.all([
     Period.findById(req.params.id).exec(),
     Song.find({ period: req.params.id }, "name").exec(),
@@ -92,6 +97,7 @@ exports.period_delete_get = asyncHandler(async (req, res, next) => {
 
 // Handle period delete on POST.
 exports.period_delete_post = asyncHandler(async (req, res, next) => {
+
   const [period, allSongsWithPeriod] = await Promise.all([
     Period.findById(req.params.id).exec(),
     Song.find({ period: req.params.id }, "name").exec(),
@@ -112,10 +118,47 @@ exports.period_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display period update form on GET.
 exports.period_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Period update GET");
+
+  const period = await Period.findById(req.params.id).exec();
+
+  if (period === null) {
+    const err = new Error("Period not found");
+    return next(err);
+  }
+
+  res.render("period_form", {
+    title: "Update Period",
+    period: period,
+  });
 });
 
 // Handle period update on POST.
-exports.period_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Period update POST");
-});
+exports.period_update_post = [
+  
+  body("name", "Name must be at least 3 characters long")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const period = new Period({
+      name: req.body.name,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("period_form", {
+        title: "Update Period",
+        period: period,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      const updatedPeriod = await Period.findByIdAndUpdate(req.params.id,
+        period, {});
+      res.redirect(updatedPeriod.url);
+    }
+  }),
+];
