@@ -13,9 +13,9 @@ block content
       input#nationality.form-control(type='text', placeholder='Nationality' name='nationality' value=(undefined===composer ? '' : composer.nationality))
     div.form-group
       label(for='date_of_birth') Date of birth:
-      input#date_of_birth.form-control(type='date' name='date_of_birth' value=(undefined===composer ? '' : composer.date_of_birth) )
+      input#date_of_birth.form-control(type='date' name='date_of_birth' value=(undefined===composer ? '' : composer.date_of_birth_yyyy_mm_dd) )
       label(for='date_of_death') Date of death:
-      input#date_of_death.form-control(type='date' name='date_of_death' value=(undefined===composer ? '' : composer.date_of_death) )
+      input#date_of_death.form-control(type='date' name='date_of_death' value=(undefined===composer ? '' : composer.date_of_death_yyyy_mm_dd) )
     button.btn.btn-primary(type='submit') Submit
 
   if errors

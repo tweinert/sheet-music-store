@@ -201,7 +201,7 @@ exports.song_update_post = [
   // convert instrument to an array
   (req, res, next) => {
     if (!Array.isArray(req.body.instrument)) {
-      req.body.intrument = 
+      req.body.instrument = 
         typeof req.body.instrument === "undefined" ? [] : [req.body.instrument];
     }
     next();

@@ -35,6 +35,14 @@ ComposerSchema.virtual("lifespan").get(function() {
   return this.date_of_birth_formatted + " - " + this.date_of_death_formatted;
 });
 
+ComposerSchema.virtual("date_of_birth_yyyy_mm_dd").get(function() {
+  return DateTime.fromJSDate(this.date_of_birth).toISODate()
+});
+
+ComposerSchema.virtual("date_of_death_yyyy_mm_dd").get(function() {
+  return DateTime.fromJSDate(this.date_of_death).toISODate()
+});
+
 ComposerSchema.virtual("url").get(function() {
   return `/catalog/composer/${this._id}`;
 });
