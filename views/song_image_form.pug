@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1= title
+
+  p #[strong Song: ] #{song.name}
+
+  form(method='POST' enctype='multipart/form-data')
+    div.form-group 
+      label(for='img') Image: 
+      input#img.form-control(type='file' name='img')
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors
+    ul
+      for error in errors
+        li!= error.msg

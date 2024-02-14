@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: 'public/images/' });
 
 // Require controller modules
 const song_controller = require("../controllers/songController");

@@ -3,6 +3,8 @@ const Composer = require("../models/composer");
 const Instrument = require("../models/instrument");
 const Period = require("../models/period");
 const { body, validationResult } = require("express-validator");
+const multer = require("multer");
+const upload = multer({ dest: 'public/images/ '})
 
 const asyncHandler = require("express-async-handler");
 
@@ -198,6 +200,9 @@ exports.song_update_get = asyncHandler(async (req, res, next) => {
 
 // Handle song update on POST.
 exports.song_update_post = [
+
+  upload.single('img'),
+
   // convert instrument to an array
   (req, res, next) => {
     if (!Array.isArray(req.body.instrument)) {
@@ -210,6 +215,7 @@ exports.song_update_post = [
   body("name", "Name must not be empty.")
     .trim()
     .isLength({ min: 1})
+    .blacklist('<>&/')
     .escape(),
   body("composer", "Composer must not be empty.")
     .trim()
@@ -230,17 +236,38 @@ exports.song_update_post = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
-    const song = new Song({
-      name: req.body.name,
-      composer: req.body.composer,
-      difficulty: req.body.difficulty,
-      price: req.body.price,
-      number_in_stock: req.body.number_in_stock,
-      instrument: typeof req.body.instrument === "undefined" ? [] :
-        req.body.instrument,
-      period: req.body.period,
-      _id: req.params.id,
-    });
+    const uploadedImage = req.file;
+
+    let song;
+  
+    if (uploadedImage) {
+      const imagePath = '/public/images' + uploadedImage.filename;
+
+      song = new Song({
+        name: req.body.name,
+        composer: req.body.composer,
+        difficulty: req.body.difficulty,
+        price: req.body.price,
+        number_in_stock: req.body.number_in_stock,
+        instrument: typeof req.body.instrument === "undefined" ? [] :
+          req.body.instrument,
+        period: req.body.period,
+        img: imagePath,
+        _id: req.params.id,
+      });
+    } else {
+      song = new Song({
+        name: req.body.name,
+        composer: req.body.composer,
+        difficulty: req.body.difficulty,
+        price: req.body.price,
+        number_in_stock: req.body.number_in_stock,
+        instrument: typeof req.body.instrument === "undefined" ? [] :
+          req.body.instrument,
+        period: req.body.period,
+        _id: req.params.id,
+      });
+    }
 
     if (!errors.isEmpty()) {
       const [allComposers, allInstruments, allPeriods] = await Promise.all([

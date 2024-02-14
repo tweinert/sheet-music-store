@@ -15,7 +15,7 @@ const SongSchema = new Schema({
   number_in_stock: { type: Number, required: true },
   instrument: [{ type: Schema.Types.ObjectId, ref: "Instrument"}],
   period: { type: Schema.Types.ObjectId, ref: "Period"},
-  img: { type: Buffer },
+  img: { type: String },
 
 });
 
