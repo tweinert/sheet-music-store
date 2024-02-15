@@ -16,6 +16,8 @@ block content
       a(href=val.url) #{val.name} 
       if index < song.instrument.length - 1 
         |,&nbsp;
+  p #[strong Image: ] 
+    img(src=song.img)
   hr
   p
     a(href=song.url+'/delete') Delete song

@@ -4,7 +4,7 @@ const Instrument = require("../models/instrument");
 const Period = require("../models/period");
 const { body, validationResult } = require("express-validator");
 const multer = require("multer");
-const upload = multer({ dest: 'public/images/ '})
+const upload = multer({ dest: 'public/images/'})
 
 const asyncHandler = require("express-async-handler");
 
@@ -241,7 +241,7 @@ exports.song_update_post = [
     let song;
   
     if (uploadedImage) {
-      const imagePath = '/public/images' + uploadedImage.filename;
+      const imagePath = '/images/' + uploadedImage.filename;
 
       song = new Song({
         name: req.body.name,
