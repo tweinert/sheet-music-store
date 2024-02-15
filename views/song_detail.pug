@@ -1,7 +1,7 @@
 extends layout 
 
 block content 
-  h1 Title: #{song.name} 
+  h1 #{song.name} 
 
   p #[strong Composer: ]
     a(href=song.composer.url) #{song.composer.name}
@@ -16,7 +16,7 @@ block content
       a(href=val.url) #{val.name} 
       if index < song.instrument.length - 1 
         |,&nbsp;
-  p #[strong Image: ] 
+    hr
     img(src=song.img)
   hr
   p
