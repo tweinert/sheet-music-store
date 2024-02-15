@@ -78,6 +78,8 @@ exports.song_create_get = asyncHandler(async (req, res, next) => {
 
 // Handle song create on POST.
 exports.song_create_post = [
+  upload.single("img"),
+  
   // convert instrument to an array
   (req, res, next) => {
     if (!Array.isArray(req.body.instrument)) {
@@ -110,15 +112,38 @@ exports.song_create_post = [
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
-    const song = new Song({
-      name: req.body.name,
-      composer: req.body.composer,
-      difficulty: req.body.difficulty,
-      price: req.body.price,
-      number_in_stock: req.body.number_in_stock,
-      instrument: req.body.instrument,
-      period: req.body.period,
-    });
+    const uploadedImage = req.file;
+
+    let song;
+  
+    if (uploadedImage) {
+      const imagePath = '/images/' + uploadedImage.filename;
+
+      song = new Song({
+        name: req.body.name,
+        composer: req.body.composer,
+        difficulty: req.body.difficulty,
+        price: req.body.price,
+        number_in_stock: req.body.number_in_stock,
+        instrument: typeof req.body.instrument === "undefined" ? [] :
+          req.body.instrument,
+        period: req.body.period,
+        img: imagePath,
+        _id: req.params.id,
+      });
+    } else {
+      song = new Song({
+        name: req.body.name,
+        composer: req.body.composer,
+        difficulty: req.body.difficulty,
+        price: req.body.price,
+        number_in_stock: req.body.number_in_stock,
+        instrument: typeof req.body.instrument === "undefined" ? [] :
+          req.body.instrument,
+        period: req.body.period,
+        _id: req.params.id,
+      });
+    }
 
     if (!errors.isEmpty()) {
       const [allComposers, allInstruments, allPeriods] = await Promise.all([
